@@ -1,0 +1,4 @@
+Refer to http://research.microsoft.com/barc/sortbenchmark/
+
+TfsSortGen can be used to generate original record file into TFS.
+ChkSort can be used to check the result file.

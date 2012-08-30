@@ -1,0 +1,10 @@
+<module>
+
+	<!-- Inherit the core Web Toolkit stuff.                  -->
+	<inherits name='com.google.gwt.user.User'/>
+
+	<!-- Specify the app entry point class.                   -->
+	<entry-point class='tfs.client.SystemMonitor'/>
+	<stylesheet src='KitchenSink.css'/>  
+	<servlet path='/tfs_monitor' class='tfs.server.MonitorServiceImpl'/>
+</module>

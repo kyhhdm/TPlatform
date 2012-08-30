@@ -1,0 +1,12 @@
+#
+#   WordFrequency Statistic Test Program for MapReduce
+# 
+#   2007-12-18,
+#
+
+runtime
+    this directory contains dictionary for html parser and Chinese segtag processing.
+    and it contains a test data file page.dat.
+
+    you should copy these files into the work directory.
+

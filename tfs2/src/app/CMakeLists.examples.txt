@@ -1,0 +1,11 @@
+# TFS Example Applications
+
+AUX_SOURCE_DIRECTORY(tfsshell SHELLSRC)
+ADD_EXECUTABLE(tfs_shell ${SHELLSRC})
+TARGET_LINK_LIBRARIES(tfs_shell tfs_client datatransfer tfs_ice log4cplus Ice rudeconfig 
+	readline termcap history boost_filesystem)
+
+AUX_SOURCE_DIRECTORY(tfsimport IMPORTSRC)
+ADD_EXECUTABLE(tfs_import ${IMPORTSRC})
+TARGET_LINK_LIBRARIES(tfs_import tfs_client datatransfer tfs_ice twreader 
+	log4cplus rudeconfig Ice z)

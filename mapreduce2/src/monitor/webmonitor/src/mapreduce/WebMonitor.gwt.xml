@@ -1,0 +1,15 @@
+<module>
+
+	<!-- Inherit the core Web Toolkit stuff.                  -->
+	<inherits name='com.google.gwt.user.User'/>
+
+	<!-- Specify the app entry point class.                   -->
+	<entry-point class='mapreduce.client.WebMonitor'/>
+	<stylesheet src='WebMonitor.css'/>  
+	<servlet path='/chartGenerator'
+			 class='mapreduce.server.ChartGeneratorImpl'/>   
+	<servlet path='/displayChart'
+			 class='org.jfree.chart.servlet.DisplayChart'/> 
+	<servlet path='/mapreduce_monitor'
+			 class='mapreduce.server.MonitorServiceImpl'/> 
+</module>

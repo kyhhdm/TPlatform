@@ -1,0 +1,19 @@
+This is the application for calculating pagerank.
+The formula was cited from Langville and Kamvar, more infomation about it:
+    http://www.limfinity.com/ir/
+
+materials in the runtime directory:
+    1.matlab programs, more info check the address above:
+        link2dat.m: convert web pages into input data
+        loaddat.m: load data
+        powermethod.m: calculate the pagerank
+    2.kristen_thesis.pdf: the thesis about the pagerank, it includes results and analytic graphs.
+    3.result_sample: result to sample.dat
+     
+The steps of use the app:
+    1.complie all the program
+    2.use pagerankReader to convert the raw data format into TKeyValue format. The example of raw file is sample.hol, whose suffix was named by Hollins University.
+    3.you can run pagerank3 on single machine, or the pagerank3_mapred on mapreduce system.
+    
+Any questions, please mail to: tsunami AT pku.edu.cn         
+

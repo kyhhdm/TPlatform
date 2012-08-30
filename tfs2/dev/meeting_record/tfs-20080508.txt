@@ -1,0 +1,32 @@
+#  小组会记录
+#  20080508
+#  author: pb
+
+参加：yzf,tqc,tsunami,zhulei,pb
+
+1。工作报告和计划
+
+tqc: 完成单机版chunbby
+     安排:下周做一个graph data数据管理的talk
+     >>从rdf, link graph的数据查询，link analysis, graph mining相关工作调研
+       分析对数据访问的常见模式。整理好，give a talk，把面临的问题介绍清楚。
+       
+tsunami: job级别的任务调度在工作中
+
+zhulei: pagerank version 0.1 coding will start next week
+
+yzf  : paper writing and benchmark experiments &　mapreduce master code talk
+
+fankai: 请假
+
+
+2。代码报告 by yzf
+master代码里的处理逻辑比较复杂，其中的一些问题，大家可以继续讨论：
+#client wait()用server的monitor实现，可能在多用户情况下，导致问题。
+#getReadyTask()后修改task状态的非原子性 , 在rebalanceTask()中可能导致问题
+#getReadyTask()被worker不停调用，可能压力大，是否有其它非查询方式。
+#worker fail的处理代码，可能还需要进一步测试。
+#分布式测试中数据一致性，锁的问题不容易调试和发现，(how to...)
+
+预告：
+5-15   pb   : mapreduce interface2 code talk next week 

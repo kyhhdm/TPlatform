@@ -1,0 +1,69 @@
+# ================================================================ 
+# install#
+# ================================================================
+
+SET(INSTALL_ROOT ${TPLATFORM_ROOT}/tplatform)
+SET(CMAKE_INSTALL_PREFIX ${INSTALL_ROOT}) 
+
+# Install into thirdparty 
+INSTALL(FILES  ${MODULE_CLT_ROOT}/tfs/tfs.h ${MODULE_CLT_ROOT}/tfs/TextReader.hpp  
+    ${MODULE_CLT_ROOT}/tfs/TextWriter.hpp ${TFS_ROOT}/src/mapred/TfsFile.hpp
+    DESTINATION  ../thirdparty/include/tfs)
+ 
+INSTALL(TARGETS tfs_ice tfs_client  tfs_mapred  
+    LIBRARY DESTINATION ../thirdparty/lib/${THIRDPARTY_LIB_PATH}  
+    ARCHIVE DESTINATION ../thirdparty/lib/${THIRDPARTY_LIB_PATH}
+    )
+
+# Install to release directory
+INSTALL(TARGETS tfs_monitor
+    #tfs_master tfs_chunkserver tfs_monitor  
+    RUNTIME DESTINATION bin  
+    )
+
+SET(SCRIPT_ROOT ${TFS_ROOT}/distrib/admin/scripts)
+INSTALL(PROGRAMS ${SCRIPT_ROOT}/tpush.sh ${SCRIPT_ROOT}/tget.sh ${SCRIPT_ROOT}/tdir.sh ${SCRIPT_ROOT}/tdel.sh 
+    ${SCRIPT_ROOT}/tlist.sh ${SCRIPT_ROOT}/register.sh
+    DESTINATION bin
+    )
+ 
+INSTALL(FILES ${SCRIPT_ROOT}/../configure ${SCRIPT_ROOT}/.register.exp
+    DESTINATION bin/..
+    )
+ 
+INSTALL(FILES ${SCRIPT_ROOT}/.register.exp
+    DESTINATION bin
+    )
+
+INSTALL(DIRECTORY  ${TPLATFORM_ROOT}/thirdparty/include/ 
+    DESTINATION include   
+    PATTERN ".svn" EXCLUDE
+    )
+
+INSTALL(DIRECTORY  ${TPLATFORM_ROOT}/thirdparty/lib/${THIRDPARTY_LIB_PATH}/ 
+    DESTINATION lib
+    USE_SOURCE_PERMISSIONS
+    PATTERN ".svn" EXCLUDE
+    )
+
+INSTALL(DIRECTORY  ${TFS_ROOT}/src/app/tfsshell/ 
+    DESTINATION examples/tfsshell   
+    PATTERN ".svn" EXCLUDE
+    )
+
+INSTALL(DIRECTORY  ${TFS_ROOT}/src/app/tfsimport/ 
+    DESTINATION examples/tfsimport
+    PATTERN ".svn" EXCLUDE
+    )
+ 
+INSTALL(DIRECTORY  ${TFS_ROOT}/doc/ 
+    DESTINATION doc/tfs
+    PATTERN ".svn" EXCLUDE
+    )
+
+EXEC_PROGRAM(sh ARGS "${TFS_ROOT}/distrib/MakeCMakeFile4Examples.sh"  OUTPUT_VARIABLE SH_OUTPUT RETURN_VALUE SH_RVALUE)
+ 
+INSTALL(FILES ${TFS_ROOT}/distrib/CMakeLists.txt.examples.ok
+    DESTINATION examples
+    RENAME CMakeLists.txt)
+

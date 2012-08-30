@@ -1,0 +1,52 @@
+# Sets the name of the project. This creates the variables projectname_BINARY_DIR and projectname_SOURCE_DIR.
+PROJECT (examples)
+
+# Path variables, change them if you move this file or change layout of the repository
+SET(TPLATFORM_ROOT ${PROJECT_SOURCE_DIR}/../..)
+SET(TFSAPI_ROOT ${PROJECT_SOURCE_DIR}/..)
+#SET(THIRD_PARTY_ROOT ${TFSAPI_ROOT})
+
+# Enviroment detection
+IF (WIN32)
+	SET(CMAKE_CXX_FLAGS_DEBUG "-g -Wall ")
+	SET(CMAKE_CXX_FLAGS_RELEASE "-g -O2 -Wall ")
+	
+	#setup 
+	INCLUDE_DIRECTORIES ("C:\\boost_1_34_1")
+ELSE (WIN32)
+	SET(CMAKE_CXX_FLAGS_DEBUG "-g -Wall -Wextra -Wno-sign-compare -Wno-unused-parameter")
+	SET(CMAKE_CXX_FLAGS_RELEASE "-g -O2 -Wall -Wextra -Wno-sign-compare -Wno-unused-parameter")
+ENDIF (WIN32)
+
+MESSAGE(STATUS "tfsapi root : ${TFSAPI_ROOT}")
+#MESSAGE(STATUS "thirdparty path : ${THIRDPARTY_LIB_PATH}")
+#MESSAGE(STATUS "ice version : ${ICE_VERSION}")
+
+# Set Build Type Debug/Release
+SET(CMAKE_BUILD_TYPE Debug)
+#INCLUDE(CMakePrintSystemInformation)
+
+# Add include directories to the build.
+#INCLUDE_DIRECTORIES (${TFSAPI_ROOT}/examples)
+INCLUDE_DIRECTORIES (${TFSAPI_ROOT}/include)
+INCLUDE_DIRECTORIES (${TFSAPI_ROOT}/include/tplatform)
+#INCLUDE_DIRECTORIES (${THIRD_PARTY_ROOT}/include)
+
+# Specify directories in which to search for libraries.
+LINK_DIRECTORIES(${TFSAPI_ROOT}/lib)
+#LINK_DIRECTORIES(${THIRD_PARTY_ROOT}/lib/${THIRDPARTY_LIB_PATH})
+
+
+#Add examples from here
+
+# TFS Example Applications
+
+AUX_SOURCE_DIRECTORY(tfsshell SHELLSRC)
+ADD_EXECUTABLE(tfs_shell ${SHELLSRC})
+TARGET_LINK_LIBRARIES(tfs_shell tfs_client datatransfer tfs_ice log4cplus Ice rudeconfig 
+	readline termcap history boost_filesystem)
+
+AUX_SOURCE_DIRECTORY(tfsimport IMPORTSRC)
+ADD_EXECUTABLE(tfs_import ${IMPORTSRC})
+TARGET_LINK_LIBRARIES(tfs_import tfs_client datatransfer tfs_ice twreader 
+	log4cplus rudeconfig Ice z)

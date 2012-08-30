@@ -1,0 +1,114 @@
+#  小组会记录
+#  20070903
+#  author: pb
+
+参加：yzf,pb,fankai,tqc,tsunami
+
+====================================================
+1. TimeBox3工作报告
+====================================================
+fankai:
+	ok >>client library 头文件整理。tfs::api
+	ok >>buffer管理
+	
+	头文件独立tfs.h的问题：
+	1。FileInfo这样的ice结构如何返回给用户？
+	   ==>tfs::api下面定义一个相同的数据类，然后对结果执行类型转换
+	2。int64
+	   ==>linux上就用系统的stdint.h
+	3。私有成员还是会暴露出去
+	   ==>可用interface定义client界面，用Object Factory创建来进一步隐藏实现。
+	      不过现在这样就可以了，just fine~
+	4. 安装目录
+	   ==>tfs的client库，安装到dist目录下
+	      dist
+	       \___ include
+	       \___ lib
+	      app使用这个安装目录进行代码编译。
+	      app 使用独立的CMakeLists.txt 
+
+tsunami:
+	ok >> 安装，部署，运行脚本（大家一起编写安装部署文档）
+	no >> 实现tfs shell
+	ok >> (FsDirectory::LockTable，看时间情况)
+
+	1. chunk server运行时在~目录下生成log文件了
+	 ==>tqc   ???
+		
+
+	2. 控制脚本也放到dist目录下	
+	    dist	 
+	       \___ conf
+	       \___ script
+	   
+	==> 大家一起来完善安装部署文档
+	http://docs.google.com/Doc?docid=ddwtvrw6_2hjt5nm&hl=zh_CN
+	   
+tqc:
+	no >> 双通道传输模块	
+	no >> 流水线错误报告
+	   
+yzf:
+	ok >> heartbeat功能实现
+	ok >> 系统状态
+	ok >> GC
+	
+	1. demo了 系统状态检测，monitor
+	   it's cool!
+	   系统各模块可以添加哪些监测信息？
+	   
+	2。不可重入锁，检查和避免死锁   
+	
+pb:
+	ok >> Journal实现
+	no >> 多线程安全	
+	
+	1。多线程安全
+	   ==> 对directory数据进行的read/write操作需要加锁，来支持多线程安全
+	       需要寻找操作中最小的加锁的数据单位。
+	2。renameFile， renameDir的语义，是rename还是move
+	   ==> 
+		Mv/rename的语义可以就定为改名（rename），api的名字就改为rename。Rename的意思是，如果目标名字（不论是目录还是文件），就抛出FileOrDirAlreadyExist异常，否则，把原来目录或文件的名字“换”为新名字。不知这样OK否？
+
+		采用明确的rename语义，这样较简单清楚；Move语义和树的实现细节联系太紧，不好。
+		move src into a exist directory这样的操作，可以让调用者显式的给出相同的目标名字
+		move(src, dst)　:=  rename( src, dst/src.leaf ) if dst exist already.
+	   
+	       
+	 3.deleteFile
+	   deleteDir   --> 必须是空目录， otherwise throw DirectoryNotEmpty
+	   
+	 4. createFile/createDir的语义：当path中间的目录不存在，会自动创建。（目的是在创建目录时，节省调用次数）  
+	   ==> 和一般有区别，注意在create操作上保持一致。	
+	   
+	 5. FsDirectory的接口函数，许多使用bool返回值
+	   ==> yes, it's a design fault. 使用exceptions in fact.
+	   
+	 6. FileInfo中加 mode成员，dirFlag编码在其中。
+	   ==> client端考虑read/write/append等操作需要的数据，master端进行调整，使得能在一次调用中返回给client。	
+	   
+===================================================
+2。TimeBox4工作计划
+   20070903---20070916
+====================================================
+根据目前系统有待完成的工作列表《TFS工作列表》，各模块继续进行功能代码完善。
+http://docs.google.com/Doc?docid=dwvtcdq_14gfcwmc&hl=zh_CN
+
+timebox4主要任务是：
+从tfs的create，read, append, delete四个基本核心功能开始功能测试。
+
+a)测试方案：how to test? 
+  	测试过程设计，包括数据，环境设定；
+  	所需的程序，工具编写；
+  	功能正确性检查方法。
+ 
+  大家先来写测试计划文档：
+  http://docs.google.com/Doc?docid=dwvtcdq_152k4z7v&hl=zh_CN 
+  各自对create，read, append, delete，设计几个测试方案。然后再讨论确定和开始实现。
+  时间：0903-0906
+  
+
+b)测试程序
+	程序和脚本，来执行自动化测试。
+  在方案确定下来后，进行程序设计和实现。
+  时间：0907-0916

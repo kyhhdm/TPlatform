@@ -1,0 +1,5 @@
+How to install?
+
+export WEBAPP_INSTALL_PATH=/home/tfs/webmonitor/jakarta-tomcat-5.0.30/webapps/mapred-monitor/
+make
+make -e install

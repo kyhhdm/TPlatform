@@ -1,0 +1,69 @@
+
+## Copyright 2007, 2008 Zhifeng YANG
+##
+## Author: yzf@net.pku.edu.cn
+## History:
+##      20080710, change code tree hierachi, by pb.
+##
+
+1. 关于目录结构
+--tplatform
+           |
+           ----thirdparty		third party libraries
+           |
+           ----tfs
+                |
+                ----src
+                    |
+                    ----master		tfs master
+                    |
+                    ----chunkserver		tfs chunkserver
+                    |
+                    ----client		tfs client library
+                    |
+                    ----datatransfer	data transfer module used by clients and chunkservers
+                    |
+                    ----ice			Ice related, see section 2
+                    |
+                    ----app			tfs applications (using tfs.h and libtfs_client.a
+                    |
+                    ----common
+                    |
+                    ----util
+                    |
+                    ----monitor		system monitors
+                    |
+                    ----mapred		tfs client wrapper for mapred
+                |
+                ----test		
+                    |
+                    ----unit	unit test
+                    |
+                    ----blockbox	black box testing, function test
+                |
+                ----dev			design documents, shared internally by developers
+                |
+                ----build		where you should build the sources
+                |
+                ----distrib		configuration files and scripts to deploy the system
+                |
+                ----doc			Doxygen generated documents
+
+2. 关于RPC
+考察了很多RPC中间件，包括Sun ONC RPC、CORBA、Ice、ACE/TAO，经过仔细的对比和选择，确定使用Ice作为RPC中间件。
+
+ice/slice目录用来存放ice源文件，后缀名为.ice。ice文件编译后可以生成java，C++等不同语言的源文件。用slice2cpp编译生成的.cpp,.h文件存放在ice/c++下，并且按照ice版本号分目录存放。用slice2java编译产生的java源文件存放在ice/java目录下。注意，Ice自动生成的C++头文件的后缀为.h，自己编码的c++头文件的后缀为.hpp。
+
+Master与Client的RPC通讯接口为ClientService.ice。Master与ChunkServer通讯接口为ChunkServerService。
+
+3. 关于文档自动化
+使用doxygen工具由源代码自动生成javadoc风格的文档。
+
+doxygen的配置文件为tfs/Doxyfile。自动生成的文档存放在doc/目录下，开发人员的终端需要安装doxygen。还要安装graphviz工具，才能让doxygen自动生成类继承关系图等。
+
+4. 如何编译
+cd build
+cmake ..
+make
+
+

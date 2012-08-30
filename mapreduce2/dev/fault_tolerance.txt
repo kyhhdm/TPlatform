@@ -1,0 +1,37 @@
+一个job提交后，所有map/trans/reduce任务都一次性分配好。
+ 
+1. 任务abandon后（WorkerServiceImpl::abandonTask()）
+if 任务abandon次数大于阈值
+then 放弃该任务所属整个Job
+else 重新调度改任务
+
+Algorithm 任务重调度
+Begin
+    for INPROGRESS Map任务
+    {
+        重新选择worker；状态设为IDLE等待被执行；失败次数++；
+    }
+    for INPROGRESS Trans任务
+    {
+        状态设为IDLE；失败次数++
+    }
+    for INPROGRESS Reduce任务
+    {
+        重新选择worker；状态设为IDLE，失败次数++；
+        重置所有相关的trans任务
+    }
+End
+
+2. Worker失效之后（见MasterDaemon::rescheduleWorkerFails()）
+foreach 分配给worker的任务
+Begin
+
+    * map idle task 重分配worker，失败次数不变
+    * map inpro task 重分配worker，状态idle，失败次数不变
+    * map comp task 若相关trans task都为complete，则OK；否则，重新分配worker，失败次数不变，状态idle，且重置所有相关trans任务
+    * reduce idle task 重分配worker，失败次数不变，重置相关trans任务
+    * reduce inpro task 重分配worker，状态idle，失败次数不变，重置相关trans任务
+    * reduce comp task OK
+    * trans task都不需要单独处理，处理map/reduce的过程中就处理了
+
+End

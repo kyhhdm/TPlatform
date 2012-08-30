@@ -1,0 +1,48 @@
+tfs filesystem－1.0
+
+运行说明：
+tfs分布式文件系统可以运行在若干台机器上，tfs filesystem-1.0版本实现client端的read操作，读取chunkserver端chunk块。
+
+运行环境：
+linux xxxx版本（版本号有要求么？） gcc-3.4.1 gcc-4.1.1版本。
+并依据gcc版本在build目录下修改CMakeLists.txt中链接的库，修改LINK_DIRECTORIES(${THIRD_PARTY_ROOT}/lib/gcc-4.1)语句中链接的gcc库，使得与版本兼容。
+请于运行机器上安装cmake
+
+运行进程配置文件修改：
+共三个进程——tfs_master,tfs_chunkserver,tfs_client
+依据以下方法修改配置文件
+
+[tfs_chunkServer.ini]
+work_dir=./
+chunk_store_dir=/home/tfs/chunks/chunk_store
+log_path=/home/tfs/chunks/tfs_chunkserver.log
+master_proxy_info= ChunkServerService:tcp -h 222.29.154.21 -p 10000
+data_sock_port=9000
+locale_ip=222.29.154.23
+
+说明：依照提示修改运行目录，chunk存放目录，本地IP，masterIP和端口等。
+
+[master]
+log=tfs_master.log
+port=10000
+
+说明：修改需要的端口
+
+[client]
+master_ip=210.25.131.9
+master_port=10000
+
+说明：修改masterIP和端口
+
+#然后在build目录下编译：
+$cmake .
+$make
+
+数据部署：
+在chunkserver本地目录下存放chunk数据，并依据此修改tfs_chunkserver.ini，chunk文件的文件名用阿拉伯数字表示，如0，1，2
+在相应的本地目录下部署配置文件和日志。
+
+分别在工作目录下运行tfs_master,tfs_chunkserver,tfs_client
+参数为对应配置文件的路径
+
+即可从client端读到chunks

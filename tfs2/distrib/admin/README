@@ -1,0 +1,13 @@
+#
+# 2008-08-15
+#
+This is administrator's toolkits.
+
+scripts     ;admin scripts 
+conf        ;configuration templates
+bin         ;servers and utilities
+clusters    ;clusters configured in system
+
+An example of installation is on an globle share directory:
+
+/homeX/tfs/share/system

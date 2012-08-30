@@ -1,0 +1,92 @@
+#  小组会记录
+#  20070606
+#  author: pb
+
+参加：yzf,pb
+
+1.讨论master设计的接口
+	FsDiretory的功能边界，它负责client的资源管理，包括chunk和lock，
+	在FsDirectory外面，master不必维护client->chunk or lock的表。
+	==〉newChunk()增加一个holder参数，记录申请者client的名字。
+	
+	忘记了，还应该增加GC的功能接口。releaseResource(string& holder);
+
+	增加getFileInfo()这样的获取文件属性信息的接口。
+		
+2.目录设计分层设想
+	pb:文件存储和目录管理应该分开，分层实现。
+	逻辑上文件数据存储负责文件对象到存储位置的管理；目录负责文件名到文件对象的管理。
+	期望能够把文件的存储和它的属性管理分层两个相对独立层次来设计和实现。
+	
+	进一步，目录PathName可以看作文件对象的一个属性，并且是可以变化的，适合用Tree类型的结构来表达。
+	而文件对象的其它属性，比如type, creat time, description, catergory等，该如何支持呢？
+	比如以dublin core核心元数据为例，如何支持呢？
+	==>不能把目录与底层的文件存储耦合得太紧。 	
+	
+	yzf: NFS的设计中目录是单独服务。
+	
+	继续查找资料，思考这个问题。
+	
+3。整理系统核心功能的语义
+	yzf: 核心功能，如read, atomic append这样的操作在我们整个讨论过程中，进行过多次修正，但没有整理出文档
+	需要进行整理！比如commit由client还是chunkserver报告的问题，还未完全清晰。
+	
+	pb: 目录操作rename,delete,以及write的语义也是这样。需要明确定义出来，系统保证什么样的语义。
+	例如功能定义opend file不容许rename, delete，底下的lock实现就和如何定义这些语义有关。
+	
+	yzf: 考试后整理这个文档。
+	
+4。类型统一问题
+	common/Type.hpp下定义公用类型	
+	包括int32, int64 etc,并转换tfs::slice::INT64这样的名字
+	
+	把Chunk, Chunks这样的ice里的名字用typdef转换到tfs里面，
+	还可能定义typdef boost::shared_ptr<Chunks> ChunksPtr这样的类型
+	
+	yzf: 去找subing，询问使用lunar库里的可用资源，比如logging ,type etc.
+	
+5。应用设想
+	infomall数据部署
+	infomall 历史回放，随机访问一个页面可以高效率支持吗？
+	1)一个web page文件没有问题，在一次通信里面可以从一个chunk server上得到数据。
+	2)多个web page文件访问，效率不高。因为通信的建立连接开销。对这种大量小片段数据的随机访问，
+	  需要考虑支持batch mode的访问模式。
+	3)如果考虑infomall保存图片，完全保存页面内容，带来的一个问题就是2)，在一次页面浏览中就会有
+	  大量小数据访问请求，如何高效率支持？
+	  
+	infomall数据中的时间如何利用？
+	yzf:关心如何用它们来提高检索效果。时间轴上pagerank演变，观察到什么是quality网页，学习quality网页的相关特征.....
+	many posibilities and interesting....  
+	处理一个在12个时间点上的web graph连接成的big graph，如何在tfs上存储和有效访问这个文件。   
+	
+	Google Online Doc服务
+	文档修改在系统中通过record append来记录，实现version管理。这个类似在目录服务上进行扩展。=>考虑系统设计中目录
+	服务的位置。
+	看到windows系统中，UI里面集成了zip这样的archive文件自动当作目录来访问的功能。==>是否在tfs的设计中，考虑对archive
+	类型文件的特殊支持。cdal应用中，需要archive方式保存小文件，那么这个archive的目录信息是用单独的cdal服务器来管理，
+	还是放在archive文件里，由tfs系统在系统一层透明支持？
+	cdal的ftp客户端访问大量小文件时，如何可以支持得更高效？自动预取？自动archive?...
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+		
+	
+	
+	
+	
+	
+	
+		
+	
+	

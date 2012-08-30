@@ -1,0 +1,6 @@
+CURDIR=`pwd`
+echo $CURDIR
+export PATH=$PATH:$CURDIR/bin
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$CURDIR/lib
+
+

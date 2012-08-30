@@ -1,0 +1,105 @@
+#  小组会记录
+#  20070516
+#  author: pb
+
+参加：fankai,tqc,pb,yzf
+
+1。项目总体设想：
+	现在已经开始编码实现阶段，下学期开学前，实现第一个原型系统。
+	现在邻近期末，tqc,fankai 有课程作业和学习任务，这一阶段时间不多。假期各人也会有一些自己的事。
+	所以，我们需要各自安排好时间，提高效率，共同努力来完成总体目标。
+	
+2。讨论内容：
+(A)目录组织
+	common		放什么？ 公用申明，数据类型定义，etc , right?
+	utility		放什么？我们自己实现的，公用的基础模块，需要按模块名分开吗？
+   目录组织需要尽快再讨论确定，yzf来
+   
+(B)客户端(fankai)
+	1)buffer机制，构造函数里可以传入参数。一般定义4K,或8K。
+	  pb: 4K,8K这么小？分布式文件系统中，buffer/cache对性能影响巨大（some paper says)
+	      大小设定需要知道用户app对文件的访问模式，btw, 文件系统prefectch怎么实现的？  
+	      
+	2)tqc: 需要64位文件接口，我们系统内部的int类型也要详细定义，int32 or int64。
+	       int64 chunkId
+	       
+	3)用户接口如何做？用FileSystem和FSDataInputStream多个类？那么FileSystem::open()返回一个
+	  DataInputStream对象，这个对象需要用指针来操作，不合乎习惯用户。
+	  pb: FileSystem和InputStream多个类设计较好，概念上很清晰。
+	      接口设计可以用handle class方法，把对象指针封装成一个对象返回。避免指针使用上的不
+	      方便，也避免对象传递的copy开销，也可以自动资源回收。
+	      
+	4)文件名，类名问题？
+	  pb: CodingStyle里的类名和文件名一致，适用UpperCamelStyle;然后放在tfs名字空间里
+	  
+	5)客户端多线程安全考虑
+	  pb: container accsse interface: startIteration() hasMore() getNext()不是线程安全的。
+	      设计上避免这类问题。
+	      
+(C)ChunkServer(tqc)
+	1)error handler &　exception 	        
+	　　　写编码规范里的这一部分，主要两个问题：a),error code和exception的区分，各自在什么情况下适用。
+	      区分清楚。b),errorCode和exception class 层次设计具体怎么做
+	2)定义和master的接口，定义提供给client的DataTransfer类的服务接口
+	
+(D)CodingStandards(pb)
+	Style方面: 大家没有大的异议，let's try and make it better.
+	Convention:　继续补充
+	
+(E)Master(yzf)
+	1)目录组织问题：
+		因为log4cplus安装时指定安装目录为thirdparty，可以安装在thirdparty/include/log4cplus下，
+		使用时指定头文件搜索路径thirdparty/include,就可以#include <log4cplus/xxx.h>
+		这样最好组织为thirdparty下面建立include,lib目录，由库的安装程序安装到这个目录里
+		thirdparty/log4cplus下放源代码，但是不访问它里面的include目录
+		最后thirdparth这样组织：
+			include		//公开库接口目录
+				log4cplus	//每个库会为自己建立相应的目录
+			lib
+			
+			log4cplus	//源码目录
+			xxx
+		
+		对于configure, log这样常用的模块，在common/中把需要的thirdparty中的头文件封装为log.h, 
+		configure.h，我们只需要包含这个封装的头文件即可#include <common/log.h>
+		对于一般的第三方库,可以直接包含#include <boost/regex/xxx.h>
+		
+		is that right?
+		
+	2)include和src目录问题
+		参考library设计，对外的头文件，最后将放入一个独立的include目录下，目的是对外提供接口。
+		所以，tfs/include下面应该放tfs系统（模块/库/whatever）对外的接口头文件
+		内部使用的头文件和source文件放在一起较好。
+		#include ""这样访问本地头文件，避免搜索到外部的同名头文件，有更好的封装性
+		Java的目录组织和名字空间设计一致，就好多了。
+		
+		is that right?
+		
+	3)utility目录
+		放内部公用的模块，类似thirdparty，不过是我们自己实现的内部支持库。有些可能是
+		对thirdparty的库再一次封装。比如一个thread库
+		这个目录组织和thirdparth组织一致？	
+		或者因为是内部使用的，省略utility/include目录，直接#include <thread/xxx.h>
+		
+		is that right?
+		
+	4)ice类问题
+		chunk这样的类，在RPC中使用，就需要由ice生成。如何使用？
+		名字空间是否会方便？
+		待查
+		
+	5)编码规范
+		yzf整理doxygen的注释格式规范
+		
+		emacs支持coding style的配置，helpful! 
+		
+		indent程序可以按指定格式格式化代码，maybe helpful.
+		
+		加入：不使用C的legacy语言特性，包括全局变量，label,goto语句。
+		
+(F)一般问题
+	fankai : Docxy使用，需要约定一个格式规范
+	pb     :　多读c++代码，比如现在的Ice, Lemur，will be helpful!
+	
+   	
+

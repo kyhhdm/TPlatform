@@ -1,0 +1,9 @@
+/*
+Write by Tu Qichen 2007-4-11
+*/
+
+
+ChunkServer的设计
+
+chunkserver存储的元数据
+chunk块版本、长度

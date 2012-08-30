@@ -1,0 +1,47 @@
+#  小组会记录
+#  20070621
+#  author: pb
+
+参加：yzf,pb
+
+>>YZF::master设计与实现相关情况<<
+1.把replication调整和Garbage Collection处理放到后台进行。
+  原方案是在各个服务调用中进行replication和garbage检查，有多处检查点，逻辑上不清晰。
+  现在使用后台线程对核心数据扫描，来处理这两种情况。
+  delay check有一定好处：
+    逻辑简单，避免多处检查点容易带来的不一致、遗漏等问题；
+  可能的坏处：
+    不够及时，某些重要的replication调整不能及时处理，可能带来数据丢失。(需要评估)-->
+    折中方案，找出关键检查点，其它都后台处理。
+    
+2。锁问题
+  调用FSDirectory的mutate类型操作前，加锁。==>把锁放到FSDirectory里面去，better?
+  应该更好：性能优化，在FSDirectory里面，可以控制更细粒度的锁实现，提高性能。    
+  另外使得相关操作成为Synchronous类型，避免在外部加锁因为顺序导致的死锁情况。
+  
+  问题：Notify和Mutex有性能差异吗？（no,right?）
+  
+3。WDRD和WRONLY语义问题
+  write可以写文件尾，并且这时候write和append操作语义不同：append只保证每个操作的原子
+  性，不保证多个操作的结果顺序，那么数据必须是记录类型，且与顺序无关的时候才适合用。
+  write的写语义和通常的写一样，保证写的顺序一致，并不要求数据是记录类型。  
+  
+>>PB::FSDirectory相关情况<<
+1。查找了file system相关资料，看到metadata的扩展性实现，比如NTFS的attribute，BE-FS的
+可index的文件属性。==>help to design
+
+
+>>PB::项目相关情况<<
+1。阶段性总结
+   整理项目目标、功能特性设计、总体架构的工作，写成文档。
+   整理项目准备阶段的工作成果，包括svn,gforge，编码规范，hadoop分析等。参照agile过程，
+   目前需要准备unit test和auto build工具。pb->unit test, yzf->auto build。考虑逐步引入
+   unit test, refactoring，code review等开发方法。
+
+2。项目计划
+   下一阶段首先以build一个版本为阶段目标。在这个过程中把模块接口设计完成。
+   从tqc,fankai考试结束，再具体实施。
+   
+	
+
+

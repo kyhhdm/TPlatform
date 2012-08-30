@@ -1,0 +1,54 @@
+#  小组会记录
+#  20070814
+#  author: pb
+
+参加：yzf,pb,fankai,tqc,tsunami
+
+1. 讨论目前系统有待完成的工作列表《TFS工作列表》
+http://docs.google.com/Doc?docid=dwvtcdq_14gfcwmc&hl=zh_CN
+
+讨论几个问题：
+a)客户端发行的include文件，用proxy类与实现代码隔离。
+  =>创建tfs::api名字空间，把用户访问类与实现独立开
+
+b)函数返回对象的问题
+  =>在构造函数和变量定义初始化中使用，编译器会优化，没有临时变量的复制开销。
+  =>但使用赋值语句时，怎么样？
+
+c)如何同时支持异常和返回错误码的问题。
+  =>统一使用异常，just ok. 
+  =>考虑a)隔离用户与底层实现的依赖，如ice，则需要实现新的异常类。
+  
+d)系统运行状态
+  =>类似/proc文件系统，master提供访问接口，支持对系统运行状态和参数的察看和设置
+  
+2。timebox3的目标（）
+*    目标： 建立并运行一个可使用的版本
+*    时间：2007-8-13   -> 2007-8-31
+
+个人工作任务选择：
+fankai:  
+	client library 头文件整理。tfs::api
+	buffer管理
+tsunami:
+	安装，部署，运行脚本（大家一起编写安装部署文档）
+	实现tfs shell
+	(FsDirectory::LockTable，看时间情况)
+tqc:
+	双通道传输模块	
+	流水线错误报告
+yzf:
+	heartbeat功能实现
+	系统状态  or  GC
+pb:
+	Journal实现
+	多线程安全	
+	
+另外：
+开始编写测试计划文档，目前可以进行的read,append功能测试，由fankai,pb进一步更细致的实现。
+学习mock单元测试~
+
+
+
+
+

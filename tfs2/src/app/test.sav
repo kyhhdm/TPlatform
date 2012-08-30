@@ -1,0 +1,163 @@
+/**
+ * @file	TestClient.hpp
+ * test client	
+ * 
+ * @author	Fan Kai(FK), Peking University	
+ * @date	07/06/2007 03:45:51 PM CST
+ *
+ */
+
+#include <client/tfs.h>
+#include <queue>
+#include <cstdlib>
+#include <iostream>
+using namespace tfs::api;
+using namespace std;
+
+queue<string> dirs;
+size_t nfiles = 0;
+const size_t NUM = 100000;
+const size_t CHUNK_SIZE = 600;
+
+void testList(FileSystem tfs, string dir) {
+	string path;
+	cout <<"List directory: " <<dir <<endl;
+	FilesInfo sub = tfs.listDirectory(dir);
+	for (size_t i = 0; i < sub.size(); ++i) {
+		path = dir + sub[i].name;
+		if (tfs.existDirectory(path) ) {
+		   	dirs.push(path);
+			cout <<sub[i].name <<"\t--directory" <<endl;
+		} 
+		else {
+			cout <<sub[i].name <<"\t" <<sub[i].size <<"B\t" <<sub[i].replication
+			   	<<"R\t" + sub[i].chunkSize <<"CS" <<endl;
+			nfiles ++;
+		}
+	}
+}
+
+void testFS() {
+	try {
+		//test filesystem operation
+		FileSystem tfs;
+
+		//test list directory
+		dirs.push("/");
+		while (!dirs.empty()) {
+			testList(tfs, dirs.front());
+			dirs.pop();
+		}
+		cout <<nfiles <<" files in total." <<endl <<endl;
+
+		//test dir and file operation
+		cout <<"Create dir _test_tfs." <<endl;
+		tfs.createDirectory("/_test_tfs");
+		tfs.create("/_test_tfs/_test_file", 3, 64*1024*1024);
+		tfs.renameDirectory("/_test_tfs", "/_test_tfs_");
+		tfs.renameDirectory("/_test_tfs_/_test_file", "/_test_tfs_/_test_file_");
+		tfs.remove("/_test_tfs_/_test_file_");
+		tfs.deleteDirectory("/_test_tfs_");
+	}
+	catch (TFSException &ex) {
+		cout <<"Get exception: " <<ex.reason <<endl;
+	}
+}
+
+void check(char *a, char *b, int n) {
+    int i;
+    for (i = 0; i < n; ++i){
+        if (a[i]!=b[i]) {
+            cout <<"TEST:check wrong!" <<endl;
+            cout <<i <<endl;
+            break;
+        }
+    }
+    if (i == n) 
+        cout <<"TEST:check right!" <<endl;
+}
+
+void testAppendRead() {
+	try {
+		//test filesystem operation
+		FileSystem tfs;
+        
+        if (!tfs.existFile("/test")){
+            tfs.create("/test", 0, CHUNK_SIZE);
+        }
+        
+        FileInfo info = tfs.getFileInfo("/test");
+        cout <<info.name <<" " <<info.size <<endl;
+
+        AppendStream as = tfs.openForAppend("/test");
+        cout <<"create over " <<endl;
+        char a[NUM], b[NUM];
+        for (size_t i = 0; i < NUM; ++i) 
+            a[i] = i*339%7 +'a';
+        size_t num = 0, n;
+        while (num < NUM - CHUNK_SIZE) {
+            n = rand() * 335577 % CHUNK_SIZE; 
+        //    cout <<"TEST:append " <<n  <<" bytes." <<endl;
+            as.append(a + num, n);
+            num += n;
+        }
+        as.flush();
+        cout <<"TEST:append " <<num  <<" bytes totally." <<endl;
+
+        InputStream is = tfs.open("/test");
+
+        size_t size = is.seek(0, SEEK_END);
+
+        //test 1
+     //   cout <<"TEST:try read " <<size <<" bytes" <<endl;
+        n = is.read(b, size);
+     //   cout <<"TEST:read " <<n <<" bytes" <<endl;
+        check(a, b, n);
+
+        //test 2
+        is.seek(0, SEEK_SET);
+        n = is.read(b, size/2);
+        check(a, b, n);
+
+        //test3
+        n = is.read(b, size);
+        check(a + size/2, b, n);
+
+        //test4
+        is.seek(-1000, SEEK_CUR);
+        n = is.read(b, NUM);
+        check(a + size - 1000, b, n);
+
+        //test5
+        is.seek(NUM/2, SEEK_END);
+        n = is.read(b, NUM);
+        check(a + size - NUM/2, b, n);
+
+        //test6
+        n = 0; int t = 0;
+//        cout <<t <<"  " <<n <<" " <<is.seek(0, SEEK_CUR) <<endl;
+        is.seek(0, SEEK_SET);
+ //       cout <<t <<"  " <<n <<" " <<is.seek(0, SEEK_CUR) <<endl;
+        while (is.seek(0, SEEK_CUR) < size){
+            t = rand()% CHUNK_SIZE * 7;
+       //     cout <<"TEST:tryread " <<t <<endl;
+            is.read(b+n, t);
+            n += t;
+     //       cout <<t <<"  " <<n <<" " <<is.seek(0, SEEK_CUR) <<endl;
+        }
+        check(a, b, size);
+	}
+	catch (TFSException &ex) {
+		cout <<"Get exception:" <<ex.reason <<endl;
+	}
+	catch (exception &e) {
+		cout <<"Get exception." <<e.what()  <<endl;
+	}
+
+}
+
+int main() {
+	//testBasicFS();
+	//testFS();
+	testAppendRead();
+}

@@ -1,0 +1,34 @@
+## MapReduce Example Applications
+
+#PageLen, statistics on page length of a web corpus
+ADD_LIBRARY(PageLen SHARED
+    PageLen/PageLen.cpp
+    PageLen/PageLenMapper.cpp
+    PageLen/PageLenReducer.cpp
+)
+TARGET_LINK_LIBRARIES(PageLen mapred_interface twreader)
+
+#WordFrequency, statistics on word frequency of a web corpus, including Chinese content supports.
+ADD_LIBRARY(WordFrequency SHARED
+    WordFrequency/WordFrequency.cpp
+    WordFrequency/WordFrequencyMapper.cpp
+    WordFrequency/WordFrequencyReducer.cpp
+)
+TARGET_LINK_LIBRARIES(WordFrequency mapred_interface twreader query segtag util)
+
+#PennySort, a benchmark of parallel sorting algorithm
+ADD_LIBRARY(PennySort SHARED
+    PennySort/PennySort.cpp
+    PennySort/PennySortMapper.cpp
+    PennySort/PennySortReducer.cpp
+    PennySort/PennySortRecord.cpp
+)
+TARGET_LINK_LIBRARIES(PennySort mapred_interface)
+
+ADD_EXECUTABLE(ChkSort PennySort/tools/chkSort/ChkSort.cpp)
+ADD_EXECUTABLE(SortGen PennySort/tools/sortGen/SortGen.cpp)
+ADD_EXECUTABLE(TfsSortGen PennySort/tools/sortGen/TfsSortGen.cpp)
+TARGET_LINK_LIBRARIES(TfsSortGen tfs_client tfs_ice Ice log4cplus rudeconfig)
+
+
+

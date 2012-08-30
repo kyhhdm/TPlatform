@@ -1,0 +1,42 @@
+#  小组会记录
+#  20070531
+#  author: pb
+
+参加：fankai,tqc,pb,yzf
+
+1. master内部FsDirectory接口问题
+   a). Directory负责chunk的操作有：
+   	id分配；
+   	创建：一个新chunk
+   	提交：当此chunk写完成时，master更新它的状态为可用
+   	
+   	所以原来的addFile()接口不对，需要分解为3个
+   	
+   b). master端不维护文件状态(由client端的库维护)，master只维护client状态(lease)和chunk状态(invisible?)	
+          哪些文件被打开了，master不维护，而client端有文件表打开表来维护。
+          哪些chunk正在被appending，处于invisible状态，这个由master::Directory维护。在上面三个操作中，内部处理。
+          client申请了哪些chunk，这个由master维护。在master维护client-->lease的表里，把client-->chunk也加入。
+          Directory内部是filename--->chunk,<holder,lock>这样的map，而client--->lease,chunk这样的map在Directory之外维护。
+          
+
+    c). exception问题
+	exception粒度。
+		细粒度is ok：用类名反应一类具体的异常，而what()返回发生异常的环境信息，
+		(学习ice异常的设计和使用：ice的异常中，加入了_line, _file,_name信息。）
+		
+		考虑在模块边界，使用RPC的地方，使用ice的异常。因为RPC中要传递的异常类，是必须明确设计出来的。
+		而在模块内部，可以使用自己设计的异常体系，从std::exception继承下来；也可以从ice异常继承，保持一致性。
+		模块内部的异常更多一些，有些在内部就可以处理完毕了。这样，有可能会在边界上进行异常转换。
+		
+		第一步：把边界上的异常先确定下来。这样可行吗？
+		
+2。六月份时间安排
+   tqc,fankai集中精力准备复习考试。等结束后，我们的小组工作再继续。
+   yzf主要在master的设计和实现，pb辅助其中的Directory设计实现。下周完成master中主要类模块的接口设计，进行讨论。
+   
+   
+   
+   
+   
+     
+   

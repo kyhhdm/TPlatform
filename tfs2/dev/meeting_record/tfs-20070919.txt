@@ -1,0 +1,98 @@
+#  小组会记录
+#  20070919
+#  author: pb
+
+参加：yzf,pb,fankai,tqc,tsunami,zhulei
+
+~~~~~~~欢迎zhulei加入~~~~~~
+
+1。工作报告
+
+tsunami:
+	>>shell:
+    	>>   tsunami -->tfs_terminal，同时也是对client库的测试
+    	
+    	测试发现一些bug，通过gforge bug report提交了一个。
+    	
+    	问题：怎样报告一个bug?
+    	      对于能够通过设置环境，确定会重复出现的程序错误，异常，可以报告为一个bug，
+    	      通过bug跟踪系统提交和记录下来。
+    	      
+    	      不确定的错误，怎么报告？
+    	      
+    	问题：bug提交给谁？
+    	      比如readDir()列文件名乱码，错误提交给master::FsDirectory还是clientLibrary?
+    	      就广播吧，提交给多个可能的模块，让各自检查和测试	
+    	
+    	考虑：
+    	      记录用户操作，提供回放功能，能帮助检查和重现错误。
+    	
+yzf:
+	>>功能测试程序：（由yzf来负责）
+	>>yzf   --> 程序框架，类设计
+	完成了test task框架设计
+
+	本周负责代码实现	
+	
+	>>BUG跟踪：
+        >>   yzf --> 察看 gforge上的bugzilla功能
+       	
+       	gforge is ok!
+       	
+tqc:
+	>>chunkserver:
+    	>>   tqc -->继续完成chunkserver的功能
+    	
+    	1。完成了协议修改，支持了data和command的交错传输，这样在chunkserver read数据错误时，
+    	就能够终止数据传送，而报告错误给客户端。
+    	
+    	如何测试？
+    	
+    	2。完成了checksum代码，待测试
+    	
+    	3。数据管理怎么做？
+    	   集中方案：
+    	   	高效率，但不安全，为了提高可靠性，实现复杂。
+    	   	是否可以用有日志功能支持的bdb？有吗？
+    	   	
+    	   独立文件保存元数据方案：
+    	   	效率不高，对启动速度可能有较大影响，但安全，出现错误不会
+    	   	导致整个chunkserver失效。实现也简单。
+    	
+fankai:
+       >>单元测试：
+       >>    fankai来学习mock技术
+       
+       客户端api对外的异常，需要对内部异常进行转换，在哪里转换？
+       1。在api实现里，对底层库调用进行try()catch，转换异常
+       2。在底层直接抛出api的异常。
+       
+       ==>1.的结构更清晰，没有不好的依赖关系。建议使用。       
+
+pb:
+	>>journal log:
+	>>   pb --> 添加log数据的浏览，for test& debug
+
+	done，还未测试。
+
+2。本周工作安排：
+tsunami:继续shell实现
+
+yzf:  	测试框架实现
+
+fankai: 测试计划2《tfs文件系统基本操作功能测试》的 task实现
+	写测试计划1《异常规范测试》
+	
+zhulei: 测试计划3《append并发写正确性测试》的 task实现
+
+tqc   : chunkserver的功能（数据管理？）
+	写chunkserver相关的测试计划  
+	考虑自己的测试程序与cxxtest框架结合的问题
+	考虑chunkserver如何使用mock的问题
+
+pb    : 
+
+
+3。研究工作开展准备工作安排
+	本周pb负责这件工作的进展   
+    

@@ -1,0 +1,11 @@
+###  README --- /home/yzf/myWorkspace/tplatform/tfs/mapred/
+
+## Copyright 2007 Zhifeng YANG
+##
+## Author: yzf@net.pku.edu.cn
+## Keywords: 
+
+
+This is a wrapper on ClientService to get chunk informations, used by mapreduce project. 
+
+

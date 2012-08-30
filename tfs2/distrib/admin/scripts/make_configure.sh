@@ -1,0 +1,54 @@
+#!/bin/sh
+
+#
+# ENVIRONMENT SETUP
+#
+CONFIG_FILE=`dirname $0`/configure
+if [ -f $CONFIG_FILE ]; then
+    source $CONFIG_FILE
+else    
+    LIBHOME="/homeX/tfs/share/system/scripts/"
+    CONFHOME="/homeX/tfs/share/system/conf/"
+fi
+
+#usage
+usage(){
+    echo "usage: make_configure.sh <TFS_MASTER_IP> <TFS_MASTER_PORT> <MAPRED_MASTER_IP> <MAPRED_MASTER_PORT> <INSTALL_ROOT>"
+    exit 0
+}
+
+if [ ! $# -eq 5 ]; then
+    usage
+fi
+
+
+#
+# PARAMETERS
+#
+TFS_MASTER_IP=$1
+TFS_MASTER_PORT=$2
+MAPRED_MASTER_IP=$3
+MAPRED_MASTER_PORT=$4
+INSTALL_ROOT=$5
+
+#
+# LOCAL INFO
+#
+TFS_LOCAL_IP=`sh $LIBHOME/get_ipaddress.sh eth0`
+MAPRED_LOCAL_IP=$TFS_LOCAL_IP
+LOCAL_PORT_ID=`echo $TFS_LOCAL_IP | cut --delimiter=. -f 4`
+MAPRED_LOCAL_PORT=`expr $MAPRED_MASTER_PORT + $LOCAL_PORT_ID` 
+TFS_LOCAL_PORT=`expr $TFS_MASTER_PORT + $LOCAL_PORT_ID` 
+MAPRED_LOCAL_NAME=`uname -n`
+
+#
+# PATTERN REPLACEMENT
+#
+cp -f $CONFHOME/*.ini $INSTALL_ROOT/conf
+perl -i -pe "s({INSTALL_ROOT})($INSTALL_ROOT)g;s({TFS_MASTER_PORT})($TFS_MASTER_PORT)g;" $INSTALL_ROOT/conf/tfs_master.ini
+perl -i -pe "s({TFS_MASTER_IP})($TFS_MASTER_IP)g;s({TFS_MASTER_PORT})($TFS_MASTER_PORT)g;s({MAPRED_MASTER_IP})($MAPRED_MASTER_IP)g;s({MAPRED_MASTER_PORT})($MAPRED_MASTER_PORT)g;s({INSTALL_ROOT})($INSTALL_ROOT)g;" $INSTALL_ROOT/conf/tfs_client.ini
+perl -i -pe "s({TFS_MASTER_IP})($TFS_MASTER_IP)g;s({TFS_MASTER_PORT})($TFS_MASTER_PORT)g;s({MAPRED_MASTER_PORT})($MAPRED_MASTER_PORT)g;s({INSTALL_ROOT})($INSTALL_ROOT)g;" $INSTALL_ROOT/conf/mapred_master.ini
+
+perl -i -pe "s({TFS_MASTER_IP})($TFS_MASTER_IP)g;s({TFS_MASTER_PORT})($TFS_MASTER_PORT)g;s({INSTALL_ROOT})($INSTALL_ROOT)g;s({TFS_LOCAL_IP})($TFS_LOCAL_IP)g;s({TFS_LOCAL_PORT})($TFS_LOCAL_PORT)g;" $INSTALL_ROOT/conf/tfs_chunkserver.ini
+perl -i -pe "s({MAPRED_MASTER_IP})($MAPRED_MASTER_IP)g;s({MAPRED_MASTER_PORT})($MAPRED_MASTER_PORT)g;s({INSTALL_ROOT})($INSTALL_ROOT)g;s({MAPRED_LOCAL_IP})($MAPRED_LOCAL_IP)g;s({MAPRED_LOCAL_PORT})($MAPRED_LOCAL_PORT)g;s({MAPRED_LOCAL_NAME})($MAPRED_LOCAL_NAME)g;" $INSTALL_ROOT/conf/mapred_worker.ini
+

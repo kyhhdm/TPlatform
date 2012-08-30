@@ -1,0 +1,45 @@
+#  小组会记录
+#  20080522
+#  author: pb
+
+参加：yzf,tqc,fankai,tsunami,zhulei,pb
+
+1。工作报告和计划
+
+tsunami: 
+     完成job schedule,更好的测试有待于使用mock worker方式
+     >>测试is very important, mock方式值得尝试 
+
+tqc: 
+     看bdb replication的实现， <<bdb book>>
+     看到ace封装的bdb replication代码，pretty,推荐大家学习ace
+     >>nice
+       
+fankai: 
+     论文中
+     实现了tfs client类iostream的TextReader/TextWriter类
+
+zhulei: 
+     论文中
+
+yzf  : 
+     Mapreduce Code Merge into MapReduce2, OK!
+     修改调度代码，PennySort运行75s/18 nodes now
+     继续PennySort测试Mapreduce系统性能和扩展性
+
+pb:
+     Help to build PennySort on interface2
+     BugFix in interface2
+
+2。代码报告 by fankai
+#参照std::iostream, java::inputStream etc, 讨论client库对text stream支持
+#worker端链接池，在小规模系统下，应当很有效；但大规模系统中，怎么办?
+ 传输任务调度可能有优化空间。
+ 可以评估传输任务性能
+#worker::TransferServer/TransferFile模块性能有待测试，.vs. IceTrans .vs. ChunkTransfer
+#worker里面运行mapper,reducer任务，进程传递回来的信息少，only one ExitCode now
+ 更好的IPC机制，报告更多信息is better, like statistics info
+#worker里reducer执行方式扩展：groupBySort or groupByHashTable
+
+预告：
+5-29    yzf  : tfs master & monitor code talk next week 

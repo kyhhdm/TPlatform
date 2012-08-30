@@ -1,0 +1,41 @@
+#  小组会记录
+#  20080424
+#  author: pb
+
+参加：fankai,tqc,tsunami,pb
+
+1。工作报告和计划
+
+tqc: general graph data storage on bigtable 	
+     系统提供数据partition机制，用户来安排策略，实现general
+     下一步工作：从rdf, link graph的数据查询，link analysis, graph mining相关工作调研
+     		分析对数据访问的常见模式。整理好，give a talk，把面临的问题介绍清楚。
+      	
+fankai: interface2整合
+	
+tsunami: 5月底发布，需要job级别的调度，下一步集中在这个任务上, with help of yzf
+
+2。小组工作计划
+
+系统发布尚需功能和任务：
+a. concurrent write (chunk resizable dynamically)
+b. combine multiple files into a single file (metadata merge)
+c. finer job scheduling 
+d. algorithm application demos
+
+
+计划以后组会上，安排一个代码review的报告： 1 hour
+1.事先大家read code，
+2.会上由talker做代码讲解，
+3.Q&A
+目的是帮助大家了解整个系统的工作，也可能improve code quality。
+顺序安排如下：
+5-8     yzf  : mapreduce master
+5-15    pb   : mapreduce interface2
+5-22    fankai : tfs client & mapreduce worker
+5-29    yzf  : tfs master & monitor
+6-5	tqc  : tfs chunk server & datatransfer
+6-12	pb   : tfs fsdirectory
+6-19	tsunmai : tfs shell & mapreduce application
+请talker作好ppt准备，并提前提醒group members阅读指定代码
+    

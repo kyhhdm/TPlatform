@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+	This is the webapp deployment file used by the Tomcat servlet
+        container. 
+-->
+
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
+    version="2.4">
+
+  <display-name>TFS Web Monitor</display-name>
+  <description>
+     Tianwang Filesystem Web Monitor
+  </description>
+
+  <context-param>
+    <param-name>master_ip</param-name>
+    <param-value>127.0.0.1</param-value>
+    <description>
+	  The master's IP address. 
+    </description>
+  </context-param>
+
+  <context-param>
+    <param-name>master_port</param-name>
+    <param-value>10000</param-value>
+    <description>
+	  The master's service port. 
+    </description>
+  </context-param>
+
+  <servlet>
+    <servlet-name>tfs_monitor</servlet-name>
+    <servlet-class>tfs.server.MonitorServiceImpl</servlet-class>
+        <init-param>
+            <param-name>master_ip</param-name>
+            <param-value>222.29.154.21</param-value>
+        </init-param>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>tfs_monitor</servlet-name>
+    <url-pattern>/tfs_monitor</url-pattern>
+  </servlet-mapping>
+
+</web-app>

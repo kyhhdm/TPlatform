@@ -1,0 +1,88 @@
+#  小组会记录
+#  20070926
+#  author: pb
+
+参加：yzf,pb,fankai,tqc,tsunami,zhulei
+
+1。工作报告
+
+yzf:  	
+	>>测试框架实现
+	done!
+
+fankai: 
+	>>测试计划2《tfs文件系统基本操作功能测试》的 task实现
+	...理解错了...  O_O!
+	
+	>>写测试计划1《异常规范测试》
+	客户端异常分为3类，确定下来每一个异常用一个具体类对应，才用3层继承关系实现
+	
+	
+zhulei: 
+	>>测试计划3《append并发写正确性测试》的 task实现
+	testAppend代码实现了，有错误待调试
+
+tqc   : 
+	>>chunkserver的功能（数据管理？）
+	>>写chunkserver相关的测试计划  
+	>>考虑自己的测试程序与cxxtest框架结合的问题
+	>>考虑chunkserver如何使用mock的问题
+	
+
+tsunami:
+	>>继续shell实现
+	数模竞赛
+
+pb    : 
+	>>FsDirectory里面加入log,易于错误调试
+	done!
+
+2。本周工作安排：
+
+	各人继续上周的工作，在这一个时间段完成。
+	tfs系统目前集中在功能测试，和bug修正，期望能在10月底release一个可基本稳定运行的“可用”版本。
+
+tsunami:
+	继续shell实现
+	增加ftp的put, get命令
+
+yzf:  	
+	发现的一个master不定期的crash的bug，根据core dump来修改
+	chunkserver enroll问题：报告的chunks全部错误时的处理
+
+fankai: 
+	写测试计划1《异常规范测试》
+	测试计划2《tfs文件系统基本操作功能测试》的 task实现
+		
+	特别是首先把基本测试程序testClient测试通过。它是我们系统的最基本测试程序。
+	
+zhulei: 测试计划3《append并发写正确性测试》的 task实现
+
+tqc   : chunkserver的功能（数据管理？）
+	写chunkserver相关的测试计划  
+	考虑自己的测试程序与cxxtest框架结合的问题
+	考虑chunkserver如何使用mock的问题
+	
+	提交更新chunkserver配置文件的说明文档
+	
+
+pb    : 
+	FsDirectory负责检查dirName和fileName。如cd root和cd root/，参数检查由FsDirectory来完成。
+
+3。系统运行环境
+	a)分布式运行环境
+	tsunami讲解了在build1上系统运行脚本，~/tfs/dist/script/里面
+	这个系统现在开始一直运行。	
+	
+	b)单机运行环境
+	可参见webdigest上~/pb/tfs的示例。
+	测试环境，可以开4个窗口，3个窗口执行tail -f xxx.log来跟踪显示master, chunkserver, client的日志
+	1个窗口执行测试程序，观察测试输出结果
+
+	各人在自己的机器上配置好单机运行环境，然后测试，把发现的bug通过gforge提交。
+	等单机通过后，再到分布式环境下去测试。
+	
+
+4。研究工作开展准备工作安排
+	国庆期间继续调研，察看相关工作的情况。
+    

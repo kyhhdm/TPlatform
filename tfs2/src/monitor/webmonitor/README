@@ -1,0 +1,4 @@
+* How to install ?
+make 
+export WEBMONITOR_INSTALL_PATH=/path/to/tomcat/webapps/ROOT
+make -e install

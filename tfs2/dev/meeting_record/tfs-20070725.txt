@@ -1,0 +1,42 @@
+# 小组会议记录
+# 20070725
+# author: tsunami
+
+参加：yzf,tqc,fk,tsunami
+
+1.上周进展和总结:
+	FK:出了一些bug,本地数据测试已经通过.
+	tsunami:部署环境和测试已经完成.运行通过.
+	TQC:传输命令和数据完成,现在是一个线程和一个socket来同时传数据和命令,准备用两个socket分别传输.
+	YZF:下一阶段准备做写操作,可以有append和write,两者锁机制不同,决定先做append.
+
+2.下一阶段设计思路
+	pb老师会负责目录结构,FsDirectory等方面工作.锁机制也在其中来维护.
+	YZF:
+		masterDB:single进程,维护系统运行状态.
+		接口:clientServerImpl...
+		GarbageCollection,chunkMigration两个类由后台进程维护?or需要的点操作?  还是后台+点操作比较好,保证一定效率,于chunkserver交互,维护信息和一些需要延时来进行的操作(如垃圾回收).
+
+	TQC:
+		给master的report是否要单一,即只是master向chunkserver发信息,或者只是chunkserver向master报告.YZF:谁发起源操作,就向master报告,master提供的两个接口chunkReceived和chunkReport在不同情景下执行报告的功能.
+
+		流水线的问题:怎么样来并发写操作?流水线怎么设计? TQC:需要考虑.
+
+		副本一致性的问题: chunk加版本号,对于chunkserver,操作成功后把接受到的chunk版本号加1,在返回给master的报告中,版本号对应一致则正确. TQC:chunkserver作checksum,每操作成功一个chunk,就做checksum,由master检查checksum的一致性,若副本都一致,则成功.而chunkserver在每次启动的时候检查checksum和实际情况是否一致,然后采取相应措施.
+
+	FK:
+		FileSystem:目录和文件操作
+		File:与master和chunkserver通信,并进行底层文件操作.
+		TQC:注意的问题,调用chunktransfer这个接口的时候,chunkserver端init代价很高,可作为类成员变量,对于相同机器上的chunk,不同再次进行init.
+
+3.下阶段目标:
+	实现append方式,并结合上阶段成果用create->append->read测试成果.
+	时间:从下周起两周时间.
+
+4.下阶段分工:
+	FK:缓存,每进程发heartbeat.
+	TQC:流水线,写操作
+	YZF:append的调配,锁(文件级),delete操作等
+	tsunami:测试程序和样例,单元测试和系统测试,继续阅读代码,以及hadoop的增进了解.
+
+	并约定下周二讨论checksum的问题和本周发现的问题.

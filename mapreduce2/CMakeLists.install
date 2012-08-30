@@ -1,0 +1,62 @@
+# ================================================================ 
+# install#
+# ================================================================
+SET(INSTALL_ROOT ${TPLATFORM_ROOT}/tplatform)
+SET(CMAKE_INSTALL_PREFIX ${INSTALL_ROOT}) 
+ 
+# Install into thirdparty 
+INSTALL(DIRECTORY  ${MODULE_CLT_ROOT}/mapred/
+    DESTINATION  ../thirdparty/include/mapred
+    PATTERN ".svn" EXCLUDE
+    PATTERN "*.cpp" EXCLUDE
+    PATTERN "Client.hpp" EXCLUDE
+    )
+ 
+INSTALL(TARGETS mapred_ice mapred_client mapred_interface
+    LIBRARY DESTINATION ../thirdparty/lib/${THIRDPARTY_LIB_PATH}  
+    ARCHIVE DESTINATION ../thirdparty/lib/${THIRDPARTY_LIB_PATH}
+    )
+
+#install to release directory 
+INSTALL(TARGETS  mapred_ice mapred_client mapred_interface
+    #mapred_master mapred_worker mapred_monitor mapred_mapper mapred_reducer
+    mapred_monitor mapred_serial 
+    RUNTIME DESTINATION bin  
+    LIBRARY DESTINATION lib  
+    ARCHIVE DESTINATION lib
+    )
+
+#INSTALL(PROGRAMS src/app/mapred_job
+#    DESTINATION bin
+#    )
+
+INSTALL(DIRECTORY  ${TPLATFORM_ROOT}/thirdparty/include/mapred/ 
+    DESTINATION include/mapred   
+    PATTERN ".svn" EXCLUDE
+    )
+
+INSTALL(DIRECTORY  ${MAPREDUCE_ROOT}/src/app/PageLen/ 
+    DESTINATION examples/PageLen
+    PATTERN ".svn" EXCLUDE
+    )
+ 
+INSTALL(DIRECTORY  ${MAPREDUCE_ROOT}/src/app/WordFrequency/ 
+    DESTINATION examples/WordFrequency
+    PATTERN ".svn" EXCLUDE
+    )
+
+INSTALL(DIRECTORY  ${MAPREDUCE_ROOT}/src/app/PennySort/ 
+    DESTINATION examples/PennySort
+    PATTERN ".svn" EXCLUDE
+    )
+
+INSTALL(DIRECTORY  ${MAPREDUCE_ROOT}/doc/ 
+    DESTINATION doc/mapred
+    PATTERN ".svn" EXCLUDE
+    )
+ 
+MESSAGE(STATUS "install path as ${CMAKE_INSTALL_PREFIX}")
+EXEC_PROGRAM(sh ARGS ${MAPREDUCE_ROOT}/distrib/MakeCMakeFile4Examples.sh ${CMAKE_INSTALL_PREFIX}
+    OUTPUT_VARIABLE SH_OUTPUT RETURN_VALUE SH_RVALUE)
+MESSAGE(STATUS "sh return" ${SH_OUTPUT})
+

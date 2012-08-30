@@ -1,0 +1,9 @@
+#!/usr/bin/expect -f
+set user [lindex $argv 0]
+set timeout -1
+
+spawn ssh -l tfs 222.29.154.20 "cat /homeX/tfs/share/user/$user/id_rsa.pub >> /homeX/tfs/.ssh/authorized_keys"
+expect "password:"
+send -- "szpzcLLJXK\r"
+expect "Are you sure you want to continue connecting (yes/no)?"
+send -- "yes\r"

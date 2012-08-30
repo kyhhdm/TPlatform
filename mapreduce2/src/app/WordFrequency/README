@@ -1,0 +1,3 @@
+WordFrequency
+This directory contains data files needed by mapper and reduce task.
+They should be copied into job directory, refer to tpush.sh command.

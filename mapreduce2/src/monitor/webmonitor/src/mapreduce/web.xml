@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+	This is the webapp deployment file used by the Tomcat servlet
+        container. 
+-->
+
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
+    version="2.4">
+
+  <display-name>Tianwang MapReduce Web Monitor</display-name>
+  <description>
+     Web Monitor for Tianwang MapReduce System 
+  </description>
+
+  <context-param>
+    <param-name>master_ip</param-name>
+    <param-value>127.0.0.1</param-value>
+    <description>
+	  The master's IP address. 
+    </description>
+  </context-param>
+
+  <context-param>
+    <param-name>master_port</param-name>
+    <param-value>20000</param-value>
+    <description>
+	  The master's service port. 
+    </description>
+  </context-param>
+
+  <servlet>
+    <servlet-name>mapreduce_monitor</servlet-name>
+    <servlet-class>mapreduce.server.MonitorServiceImpl</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>mapreduce_monitor</servlet-name>
+    <url-pattern>/mapreduce_monitor</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>displayChart</servlet-name>
+    <servlet-class>org.jfree.chart.servlet.DisplayChart</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>displayChart</servlet-name>
+    <url-pattern>/displayChart</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>chartGenerator</servlet-name>
+    <servlet-class>mapreduce.server.ChartGeneratorImpl</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>chartGenerator</servlet-name>
+    <url-pattern>/chartGenerator</url-pattern>
+  </servlet-mapping>
+
+</web-app>

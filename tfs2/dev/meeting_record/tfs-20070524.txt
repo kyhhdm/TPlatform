@@ -1,0 +1,110 @@
+#  小组会记录
+#  20070523
+#  author: pb
+
+参加：fankai,tqc,pb,yzf
+
+1.国际化编码问题
+a)系统内部(master,chunkserver)使用string类型，因为不关心字符的具体语义，
+  操作最多涉及到'\'目录分隔符，用string就可以了。
+b)系统对外(client)指定filename的类型为Utf8String，
+  如果用户给出string类型，则client根据用户locale情况进行编码转换;
+  client库访问内部都使用string类型，并保证它是一个Utf8String。
+  转换函数可以使用glibc的iconv()；访问locale也可以使用glibc函数，或者
+  c++的locale机制。
+  
+  >>UNIMPL-保留问题<<：
+  client端代码是否考虑支持跨平台，比如支持windows。这时，编码转换
+  不能使用glibc库，需要考虑使用第三方库。
+  
+2.编码规范
+a)加入doxygen文档注释部分  
+  emacs有doxygen支持包
+  函数接口注释在头文件中写，实现文件里写实现方面的策略注释
+  
+b)加入错误处理和异常机制部分
+  如何区分错误和非错误？   forward to 编码规范 [sutter,2005]
+  异常处理效率低？   “程序尺寸增大，而正常执行过程中性能影响不大” by [sutter,2005]
+  
+  >>TODO-待解决问题<<：建立怎样的异常层次类型？ 
+  
+3.master识别client和chunkserver的名字问题
+  原设计使用ipaddr+port标识一个client/chunkserver，以这样一个String作为名字。
+  
+  chunkserver增加注册调用
+    RegisterServer()中，master给chunkserver创建一个ID并返回，用它作chunkserver的名字。master
+    维护ID的管理，保证它的唯一性。chunkserver收到ID后，进行ReportChunkList。
+    有注册的好处是，明确了一个新chunkserver的加入动作，有可能可以更清晰的处理chunkserver临时性离去/加入
+    的情况。
+  
+  client使用自动注册
+    原方案中使用ipadd+port,相当于第一次RPC调用时，自动注册。
+    master不必为了分配给client ID而维护client ID这样的状态数据。
+    
+    >>TODO-待解决问题<<：
+    master向client分配lease，说明个master仍然必须维护client的信息，这样的话，增加一个注册
+    过程并无额外开销。是这样吗？
+  
+  ipadd+port可以作唯一标识吗？以什么为单位定义一个client？
+    以进程为单位，一个进程具有一个独立的heartbeat线程，用它的ipaddr+port作client标识，具有唯一性。
+    client端对用户提供FileSystem, FsInputStream,FsOutputStream三个类，其中FileSystem对象有进程内唯一
+    性，因为它维护的文件状态表是在进程范围内共享的。可以用singleton模式来实现FileSystem。在FileSystem
+    对象初始化时，启动负责hearbeat的线程，如果有注册，也执行注册过程，或者注册与heartbeat启动结合在一起。
+    
+    btw:从FileSystem对象中得到stream对象可以用getFsInputStream()和getFsOutputStream()方法，而不使用open()方法。
+    可用handle类来封装返回对象。
+   
+  >>TODO-待解决问题<<：
+  ICE里面如何得到ipaddr+port？ 
+  ICE服务的线程模型怎样？比如多个servent激活时，访问同一个namespace对象，master代码需要怎样的线程安全保证？
+  
+4. 锁支持
+  master尽量实现为无状态，可以提高效率。
+  原设计里，我们支持对每个chunk数据块的锁，而且是系统强制锁。
+  每次read/write/append实现加锁lock，就需要操作结束时对应的执行releaseLock。
+  系统自动根据open类型来自动加相应的锁，readLock or writeLock。
+  如果在master端负责这个工作，就需要知道file open状态，根据它来加相应类型的锁。这违背了无状态服务器的想法。
+  如果在client端的库中负责，状态问题不存在了，但每次read/append/write调用都需要向master报告结束；这个对于
+  系统性能会有较大影响。
+  ==>tfs主要针对read，特别是顺序read优化，其次是多个append,最后是write。所以每次read向master通信请求lock/releaseLock
+  是不能接受的。我们改变锁粒度，支持file级别上锁。这样lock/releaseLock在文件open/close时调用，效率高。
+  损失是，不能支持多个writer，也不支持细粒度的不同chunk数据块上的read/write同时进行。但这些场景在应用中并不重要，没有关系。
+  append和read一样，加read锁即可。
+  
+  ==>我们支持文件级系统强制锁。master对Client增加lockFile,unlockFile接口。
+
+5. 模块组织
+  模块物理组织和逻辑组织保持一致，大概比较好。
+  
+  名字空间
+     整个项目使用tfs名字空间，其下为各个模块名，如master,chunkserver,client,utility(common和utility没有必要分开)
+     基本和模块目录对应。
+     
+     对外提供一个API名字空间，client把前面说的三个类放在其中。
+     
+     common目录下放公用的数据结构，数据类型声明。
+     utility目录下放公用的辅助工具类
+        比如ice中传递的数据类型ChunkServerInfo，通过继承ice创建的类,把名字空间转换到tfs中间，
+        并且添加上成员函数。放在common中。
+        
+        使用一些第三方库，需要比较复杂的头文件包含，这是可以创建一个wrapper头文件，或者wrapper类，
+        封装在utility下面。比如log。
+        
+  头文件包含
+     #include时，系统和第三方库使用<>，我们自己写的头文件使用""，并且自己写的放在前面。
+     我们自己的头文件以.hpp为扩展名
+     访问自己模块的头文件，不加任何路径名，比如#include "FsDirectory.hpp"
+         在物理组织上，可以把头文件和cpp实现文件放在模块目录下，在这个目录下编译；
+         也可以通过指定搜索路径，那么可以在其它路径下进行编译。
+     访问其它模块的头文件时，使用模块名作为路径名，比如#include "common/Type.hpp"
+         这也包括第三方库，比如#include <boost/regex.h>
+         一般不会直接跨模块访问master,chunkserver,client(除了API)里面的头文件。
+     
+     	
+  >>TODO-待解决问题<<：
+  在独立目录下进行编译是一个很好的方法，具体怎么做？
+  
+  
+  
+  
+  
